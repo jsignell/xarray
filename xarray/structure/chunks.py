@@ -10,6 +10,7 @@ from functools import lru_cache
 from typing import TYPE_CHECKING, Any, Literal, TypeVar, Union, overload
 
 from xarray.core import utils
+from xarray.core.options import OPTIONS
 from xarray.core.variable import Variable
 from xarray.namedarray.parallelcompat import (
     ChunkManagerEntrypoint,
@@ -80,7 +81,8 @@ def _maybe_chunk(
 
     if var.ndim:
         if (
-            var.shape
+            not OPTIONS["use_dask_auto"]
+            and var.shape
             and var.chunks
             and chunks
             and any(c == "auto" for c in chunks.values())

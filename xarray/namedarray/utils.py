@@ -212,6 +212,7 @@ def _get_chunk(  # type: ignore[no-untyped-def]
     Return map from each dim to chunk sizes, accounting for backend's preferred chunks.
     """
     from xarray.core.common import _contains_cftime_datetimes
+    from xarray.core.options import OPTIONS
     from xarray.core.utils import emit_user_level_warning
     from xarray.structure.chunks import _get_breaks_cached
 
@@ -236,7 +237,12 @@ def _get_chunk(  # type: ignore[no-untyped-def]
         limit = None
         dtype = data.dtype
 
-    if shape and preferred_chunk_shape and any(c == "auto" for c in chunk_shape):
+    if (
+        not OPTIONS["use_dask_auto"]
+        and shape
+        and preferred_chunk_shape
+        and any(c == "auto" for c in chunk_shape)
+    ):
         chunk_shape = chunkmanager.preserve_chunks(
             chunk_shape,
             shape=shape,

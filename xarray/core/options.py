@@ -41,6 +41,7 @@ if TYPE_CHECKING:
         "use_opt_einsum",
         "use_flox",
         "facetgrid_figsize",
+        "use_dask_auto",
     ]
 
     class T_Options(TypedDict):
@@ -75,6 +76,7 @@ if TYPE_CHECKING:
         use_numbagg: bool
         use_opt_einsum: bool
         facetgrid_figsize: Literal["computed", "rcparams"] | tuple[float, float]
+        use_dask_auto: bool
 
 
 OPTIONS: T_Options = {
@@ -109,6 +111,7 @@ OPTIONS: T_Options = {
     "use_numbagg": True,
     "use_opt_einsum": True,
     "facetgrid_figsize": "computed",
+    "use_dask_auto": False,
 }
 
 _FACETGRID_FIGSIZE_OPTIONS = frozenset(["computed", "rcparams"])
@@ -156,6 +159,7 @@ _VALIDATORS = {
             and all(isinstance(v, (int, float)) for v in value)
         )
     ),
+    "use_dask_auto": lambda value: isinstance(value, bool),
 }
 
 
@@ -341,6 +345,10 @@ class set_options:
         Takes precedence over ``use_bottleneck`` when both are True.
     use_opt_einsum : bool, default: True
         Whether to use ``opt_einsum`` to accelerate dot products.
+    use_dask_auto: bool, default: False
+        Whether to use dask auto chunking, which guarantees that
+        chunksize never exceeds a certain value, or xarray default
+        auto chunking which never splits up chunks on disk.
     warn_for_unclosed_files : bool, default: False
         Whether or not to issue a warning when unclosed files are
         deallocated. This is mostly useful for debugging.
